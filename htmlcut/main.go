@@ -62,8 +62,9 @@ func Body(doc *html.Node) []*html.Node {
 		}
 	}
 	if *el_not {
-		if (!Filter(doc))
+		if (!Filter(doc)) {
 			return nodes
+		}
 		nodes = append(nodes, doc)
 	}
 	crawler(doc)
