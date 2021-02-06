@@ -46,18 +46,25 @@ func Body(doc *html.Node) []*html.Node {
 	var nodes []*html.Node
 	crawler = func(node *html.Node) {
 		if node.Type == html.ElementNode && Filter(node) {
-			nodes = append(nodes, node)
 			if !*el_not {
+				nodes = append(nodes, node)
 				return
 			}
 		}
-		for child := node.FirstChild; child != nil; child = child.NextSibling {
+		for child := node.FirstChild; child != nil; {
+			next := child.NextSibling
 			if *el_not && child.Type == html.ElementNode && !Filter(child) {
 				node.RemoveChild(child)
 			} else {
 				crawler(child)
 			}
+			child = next
 		}
+	}
+	if *el_not {
+		if (!Filter(doc))
+			return nodes
+		nodes = append(nodes, doc)
 	}
 	crawler(doc)
 	return nodes
