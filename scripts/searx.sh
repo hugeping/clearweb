@@ -12,4 +12,4 @@ elif echo "$1" | grep -q -E '\/[0-9]+$'; then
 	page=`echo "$1"| sed -e 's|^.*/\([0-9]\+\)$|\1|'`
 	q=`echo "$1"| sed -e 's|^\(.*\)/[0-9]\+$|\1|'`
 fi
-curl -s -X POST -F 'q='"$q" -F 'q=category_general' -F 'pageno='"$page" https://search.fedi.life/search | htmlcut -val '(result.content|external.link|result.header)' -regexp | htmlgmi -l 0 -m -n
+curl -s -X POST -F 'q='"$q" -F 'category_general=1' -F 'pageno='"$page" https://search.fedi.life/search | htmlcut -val '(result.content|external.link|result.header)' -regexp | htmlgmi -l 0 -m -n
