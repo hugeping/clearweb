@@ -35,7 +35,7 @@ func main() {
 	q := ""
 	for _, v := range flag.Args() {
 		if q != "" {
-			q += "+"
+			q += " "
 		}
 		q += v
 	}
