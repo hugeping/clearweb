@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -52,7 +51,7 @@ func readStdin() string {
 func getInput() (string, error) {
 	var inputHtml string
 
-	info, err := os.Stdin.Stat()
+	_, err := os.Stdin.Stat()
 	check(err)
 
 	if *input != "" {
@@ -60,12 +59,9 @@ func getInput() (string, error) {
 		dat, err := ioutil.ReadFile(*input)
 		check(err)
 		inputHtml = string(dat)
-	} else if info.Mode()&os.ModeNamedPipe != 0 {
+	} else {
 		// we have a pipe input
 		inputHtml = readStdin()
-	} else {
-		//we shouldn't get here
-		return "", errors.New("invalid option for input - use -i <path> or pipe to stdin")
 	}
 	return inputHtml, nil
 }
