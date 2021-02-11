@@ -18,6 +18,8 @@ type Item struct {
 
 type Channel struct {
 	Items []Item `xml:"item"`
+	Title string `xml:"title"`
+	Desc string `xml:"description"`
 }
 
 type Rss struct {
@@ -42,6 +44,9 @@ func main() {
 		log.Fatal(err)
 	}
 	num := 0
+	if rss.Channel.Title != "" {
+		fmt.Printf("# %s\n\n", rss.Channel.Title);
+	}
 	for _, v := range rss.Channel.Items {
 		if v.Link != "" {
 			if v.Desc != "" {
