@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/xml"
 	"golang.org/x/net/html/charset"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"sort"
 )
 
 type Item struct {
@@ -14,6 +16,7 @@ type Item struct {
 	Link  string `xml:"link"`
 	Desc  string `xml:"description"`
 	Full  string `xml:"encoded"`
+	num   int
 }
 
 type Channel struct {
@@ -27,10 +30,12 @@ type Rss struct {
 }
 
 func main() {
-	if len(os.Args) < 2 {
+	opt_rev := flag.Bool("r", false, "Reverse output")
+	flag.Parse()
+	if len(flag.Args()) < 1 {
 		os.Exit(0)
 	}
-	resp, err := http.Get(os.Args[1])
+	resp, err := http.Get(flag.Args()[0])
 
 	if err != nil {
 		log.Fatal(err)
@@ -44,6 +49,13 @@ func main() {
 		log.Fatal(err)
 	}
 	num := 0
+	if *opt_rev {
+		for k, _ := range rss.Channel.Items {
+			rss.Channel.Items[k].num = k
+		}
+		sort.Slice(rss.Channel.Items, func(i, j int) bool {
+			return rss.Channel.Items[i].num > rss.Channel.Items[j].num })
+	}
 	if rss.Channel.Title != "" {
 		fmt.Printf("# %s\n\n", rss.Channel.Title);
 	}
