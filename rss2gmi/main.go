@@ -115,7 +115,7 @@ func main() {
 				v.Desc = html_decode(v.Desc)
 			}
 			num++
-			fmt.Printf("%s [%d]\n%s\n=> %s [%d]\n\n",
+			fmt.Printf("## %s [%d]\n%s\n=> %s [%d]\n\n",
 				v.Title, num, strings.TrimSpace(v.Desc)+"\n", v.Link, num)
 		}
 	}
