@@ -8,12 +8,14 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
 )
 
 type Item struct {
 	Title string `xml:"title"`
 	Link  string `xml:"link"`
 	Desc  string `xml:"description"`
+	num   int
 }
 
 type Channel struct {
@@ -25,8 +27,9 @@ type Rss struct {
 }
 
 func main() {
-	var page_opt *int = flag.Int("p", 1, "Page number")
-	var server_opt *string = flag.String("s", "https://search.fedi.life", "Server url")
+	page_opt := flag.Int("p", 1, "Page number")
+	server_opt := flag.String("s", "https://search.fedi.life", "Server url")
+	rev_opt := flag.Bool("r", false, "Reverse output")
 
 	flag.Parse()
 	if len(flag.Args()) == 0 {
@@ -57,6 +60,14 @@ func main() {
 	err = decoder.Decode(&rss)
 	if err != nil {
 		log.Fatal(err)
+	}
+	if *rev_opt {
+		for k, _ := range rss.Channel.Items {
+			rss.Channel.Items[k].num = k
+		}
+		sort.Slice(rss.Channel.Items, func(i, j int) bool {
+			return rss.Channel.Items[i].num > rss.Channel.Items[j].num
+		})
 	}
 	num := 0
 	for _, v := range rss.Channel.Items {
