@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/xml"
-	"golang.org/x/net/html/charset"
-	"golang.org/x/net/html"
 	"flag"
 	"fmt"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/charset"
 	"log"
 	"net/http"
 	"os"
@@ -24,7 +24,7 @@ type Item struct {
 type Channel struct {
 	Items []Item `xml:"item"`
 	Title string `xml:"title"`
-	Desc string `xml:"description"`
+	Desc  string `xml:"description"`
 }
 
 type Rss struct {
@@ -54,7 +54,7 @@ func html_decode(s string) string {
 			TxtContent += txt
 		}
 		if tt == html.SelfClosingTagToken || tt == html.StartTagToken {
-			switch (nam) {
+			switch nam {
 			case "a":
 				for {
 					n, v, m := tok.TagAttr()
@@ -82,19 +82,20 @@ func main() {
 	opt_rev := flag.Bool("r", false, "Reverse output")
 	opt_html := flag.Bool("h", false, "Decode html")
 	flag.Parse()
-	if len(flag.Args()) < 1 {
-		os.Exit(0)
-	}
-	resp, err := http.Get(flag.Args()[0])
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
 	rss := Rss{}
-	decoder := xml.NewDecoder(resp.Body)
+	var decoder *xml.Decoder
+	if len(flag.Args()) < 1 {
+		decoder = xml.NewDecoder(os.Stdin)
+	} else {
+		resp, err := http.Get(flag.Args()[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+		decoder = xml.NewDecoder(resp.Body)
+	}
 	decoder.CharsetReader = charset.NewReaderLabel
-	err = decoder.Decode(&rss)
+	err := decoder.Decode(&rss)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -104,10 +105,11 @@ func main() {
 			rss.Channel.Items[k].num = k
 		}
 		sort.Slice(rss.Channel.Items, func(i, j int) bool {
-			return rss.Channel.Items[i].num > rss.Channel.Items[j].num })
+			return rss.Channel.Items[i].num > rss.Channel.Items[j].num
+		})
 	}
 	if rss.Channel.Title != "" {
-		fmt.Printf("# %s\n\n", rss.Channel.Title);
+		fmt.Printf("# %s\n\n", rss.Channel.Title)
 	}
 	for _, v := range rss.Channel.Items {
 		if v.Link != "" {
