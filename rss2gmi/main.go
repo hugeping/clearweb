@@ -32,17 +32,19 @@ type Rss struct {
 }
 
 func html_decode(s string) string {
+	var links []string
 	TxtContent := ""
 	tok := html.NewTokenizer(strings.NewReader(s))
 	prev := tok.Token()
 
 	for {
 		tt := tok.Next()
+		if tt == html.ErrorToken {
+			break
+		}
 		n, _ := tok.TagName()
 		nam := string(n)
 		switch {
-		case tt == html.ErrorToken:
-			return TxtContent
 		case tt == html.StartTagToken:
 			prev = tok.Token()
 		case tt == html.TextToken:
@@ -58,22 +60,31 @@ func html_decode(s string) string {
 			case "a":
 				for {
 					n, v, m := tok.TagAttr()
-					if string(n) == "href" {
-						TxtContent += string(v) + " "
+					if string(n) == "href" && !strings.HasPrefix(string(v), "/") {
+						links = append(links, string(v))
+						TxtContent += fmt.Sprintf("[%c]", 64 + len(links))
 						break
 					}
 					if !m {
 						break
 					}
 				}
+			case "div":
+				TxtContent += "\n\n"
 			case "li":
 				TxtContent += "\n* "
 			case "p":
-				TxtContent += "\n"
+				TxtContent += "\n\n"
 			case "br":
 				TxtContent += "\n"
 			}
 		}
+	}
+	if len(links) > 0 {
+		TxtContent += "\n"
+	}
+	for k, v := range links {
+		TxtContent += fmt.Sprintf("=> %s [%c]\n", v, 65 + k)
 	}
 	return TxtContent
 }
