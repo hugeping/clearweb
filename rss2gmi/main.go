@@ -92,6 +92,7 @@ func html_decode(s string) string {
 func main() {
 	opt_rev := flag.Bool("r", false, "Reverse output")
 	opt_html := flag.Bool("h", false, "Decode html")
+	opt_num := flag.Int("n", -1, "Limit")
 	flag.Parse()
 	rss := Rss{}
 	var decoder *xml.Decoder
@@ -111,6 +112,7 @@ func main() {
 		log.Fatal(err)
 	}
 	num := 0
+	start := 0
 	if *opt_rev {
 		for k, _ := range rss.Channel.Items {
 			rss.Channel.Items[k].num = k
@@ -118,11 +120,24 @@ func main() {
 		sort.Slice(rss.Channel.Items, func(i, j int) bool {
 			return rss.Channel.Items[i].num > rss.Channel.Items[j].num
 		})
+		if *opt_num >= 0 {
+			start = len(rss.Channel.Items) - *opt_num
+		}
 	}
 	if rss.Channel.Title != "" {
 		fmt.Printf("# %s\n\n", rss.Channel.Title)
 	}
-	for _, v := range rss.Channel.Items {
+	for k, v := range rss.Channel.Items {
+		if !*opt_rev {
+			if *opt_num == 0 {
+				break
+			}
+			*opt_num --
+		} else {
+			if k < start {
+				continue
+			}
+		}
 		if v.Link != "" {
 			if *opt_html {
 				v.Desc = html_decode(v.Desc)
