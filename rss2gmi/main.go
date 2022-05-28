@@ -133,7 +133,16 @@ func main() {
 			d := strings.TrimSpace(item.Date)
 			t, err := time.Parse(time.RFC1123Z, d)
 			if err != nil {
+				t, err = time.Parse(time.RFC1123, d)
+			}
+			if err != nil {
 				t, err = time.Parse(time.RFC822, d)
+			}
+			if err != nil {
+				t, err = time.Parse("Mon, 2 Jan 2006 15:04:05 -0700", d)
+			}
+			if err != nil {
+				log.Fatal("Can't parse pubDate! ", d)
 			}
 			if err == nil {
 				rss.Channel.Items[k].time = t.Unix()
