@@ -1,3 +1,3 @@
-module github.com/gl00my/clearweb/atom2rss
+module github.com/hugeping/clearweb/atom2rss
 
 go 1.16

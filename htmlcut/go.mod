@@ -1,4 +1,4 @@
-module github.com/gl00my/clearweb/htmlcut
+module github.com/hugeping/clearweb/htmlcut
 
 go 1.16
 

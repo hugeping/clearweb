@@ -1,4 +1,4 @@
-module github.com/gl00my/clearweb/htmlgmi
+module github.com/hugeping/clearweb/htmlgmi
 
 go 1.16
 

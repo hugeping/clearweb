@@ -1,4 +1,4 @@
-module github.com/gl00my/clearweb/rss2gmi
+module github.com/hugeping/clearweb/rss2gmi
 
 go 1.16
 

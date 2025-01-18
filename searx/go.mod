@@ -1,3 +1,3 @@
-module github.com/gl00my/clearweb/searx
+module github.com/hugeping/clearweb/searx
 
 go 1.16
